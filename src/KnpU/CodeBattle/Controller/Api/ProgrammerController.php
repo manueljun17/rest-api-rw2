@@ -45,8 +45,7 @@ class ProgrammerController extends BaseController
 
 	    $this->save($programmer);
 
-	    $json = $this->serialize($programmer);
-	    $response = new Response($json, 201);
+	    $response = $this->createApiResponse($programmer, 201);
 	    $programmerUrl = $this->generateUrl(
 	        'api_programmers_show',
 	        ['nickname' => $programmer->nickname]
@@ -66,10 +65,7 @@ class ProgrammerController extends BaseController
 	        // $this->throw404('Crap! This programmer has deserted! We\'ll send a search party');
 	    }
 
-    	$json = $this->serialize($programmer);
-
-	    $response = new Response(json_encode($json), 200);
-	    $response->headers->set('Content-Type', 'application/json');
+    	$response = $this->createApiResponse($programmer, 200);
 
 	    return $response;
 	}
@@ -79,11 +75,7 @@ class ProgrammerController extends BaseController
 	    $programmers = $this->getProgrammerRepository()->findAll();
 		$data = array('programmers' => $programmers);
 		
-		$json = $this->serialize($data);
-
-		$response = new Response($json, 200);
-
-		$response->headers->set('Content-Type', 'application/json');
+		$response = $this->createApiResponse($data, 200);
 
 		return $response;
 	}
@@ -104,10 +96,8 @@ class ProgrammerController extends BaseController
 
     	$this->save($programmer);
 
-	    $json = $this->serialize($programmer);
-
-	    $response = new JsonResponse($json, 200);
-
+	  	$response = $this->createApiResponse($programmer, 200);
+	    
 	    return $response;
 	}
 
@@ -122,10 +112,6 @@ class ProgrammerController extends BaseController
 	    return new Response(null, 204);
 	}	 	
 
-	private function serialize ($data)
-	{
-	    return $this->container['serializer']->serialize($data, 'json');
-	}
 
 	private function handleRequest(Request $request, Programmer $programmer)
 	{

@@ -12,7 +12,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use KnpU\CodeBattle\Model\Programmer;
 use Symfony\Component\HttpKernel\Exception\HttpException;
-
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 
 class ProgrammerController extends BaseController
@@ -36,6 +36,9 @@ class ProgrammerController extends BaseController
 
     public function newAction(Request $request)
 	{
+		if (!$this->isUserLoggedIn()) {
+	        throw new AccessDeniedException();
+	    }
 	    $programmer = new Programmer();
 	    $this->handleRequest($request, $programmer);
 

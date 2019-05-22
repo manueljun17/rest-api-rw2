@@ -3,8 +3,10 @@ Feature: Programmer
   As an API client
   I need to be able to create programmers and power them up
 
- Background:
-      Given the user "weaverryan" exists
+Background:
+  Given the user "weaverryan" exists
+  And "weaverryan" has an authentication token "ABCD123"
+  And I set the "Authorization" header to be "token ABCD123"
 
 #Main Scenario
 Scenario: Error response on invalid JSON

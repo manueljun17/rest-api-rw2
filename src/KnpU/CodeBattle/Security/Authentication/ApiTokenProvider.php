@@ -41,14 +41,14 @@ class ApiTokenProvider implements AuthenticationProviderInterface
 
         return;
         // find the ApiToken object in the database based on the TokenString
-        // $apiToken = // todo
+        $apiToken = $this->apiTokenRepository->findOneByToken($tokenString);
 
         if (!$apiToken) {
             throw new BadCredentialsException('Invalid token');
         }
 
         // look up the user based on the ApiToken.userId value
-        // $user = // todo
+        $user = $this->userRepository->find($apiToken->userId);
         if (!$user) {
             throw new \Exception('A token without a user? Some crazy things are happening');
         }

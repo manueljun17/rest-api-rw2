@@ -36,6 +36,8 @@ use Symfony\Component\Validator\Mapping\ClassMetadataFactory;
 use Symfony\Component\Validator\Mapping\Loader\AnnotationLoader;
 use JMS\Serializer\SerializerBuilder;
 use JMS\Serializer\Naming\IdenticalPropertyNamingStrategy;
+use KnpU\CodeBattle\Api\ApiProblemResponseFactory;
+
 
 class Application extends SilexApplication
 {
@@ -220,6 +222,10 @@ class Application extends SilexApplication
                 ->setPropertyNamingStrategy(new IdenticalPropertyNamingStrategy())
                 ->build();
         });
+
+        $this['api.response_factory'] = $this->share(function() {
+            return new ApiProblemResponseFactory();
+        });
     }
 
     private function configureSecurity()
@@ -275,7 +281,7 @@ class Application extends SilexApplication
 
             // the class that decides what should happen if no authentication credentials are passed
             $this['security.entry_point.'.$name.'.api_token'] = $app->share(function() use ($app) {
-                return new ApiEntryPoint($app['translator']);
+                return new ApiEntryPoint($app['translator'], $app['api.response_factory']);
             });
 
             return array(
@@ -324,17 +330,9 @@ class Application extends SilexApplication
                 }
             }
 
-            $data = $apiProblem->toArray();
-            if ($data['type'] != 'about:blank') {
-                $data['type'] = 'http://localhost:8000/api/docs/errors#'.$data['type'];
-            }
-            $response = new JsonResponse(
-                $data,
-                $statusCode
-            );
-            $response->headers->set('Content-Type', 'application/problem+json');
+            $factory = $app['api.response_factory'];
 
-            return $response;
+            return $factory->createResponse($apiProblem);
         });
     }
 } 

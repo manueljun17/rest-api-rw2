@@ -39,7 +39,6 @@ class ApiTokenProvider implements AuthenticationProviderInterface
         // the actual token string value from the header - e.g. ABCDEFG
         $tokenString = $token->getCredentials();
 
-        return;
         // find the ApiToken object in the database based on the TokenString
         $apiToken = $this->apiTokenRepository->findOneByToken($tokenString);
 

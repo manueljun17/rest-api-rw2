@@ -8,6 +8,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Http\EntryPoint\AuthenticationEntryPointInterface;
 use Symfony\Component\Translation\Translator;
+use KnpU\CodeBattle\Api\ApiProblem;
 
 /**
  * Determines the Response that should be back if:
@@ -36,7 +37,11 @@ class ApiEntryPoint implements AuthenticationEntryPointInterface
     {
         $message = $this->getMessage($authException);
 
-        $response = new JsonResponse(array('detail' => $message), 401);
+        $problem = new ApiProblem(401, ApiProblem::TYPE_AUTHENTICATION_ERROR);
+        $problem->set('detail', $message);
+
+        $response = new JsonResponse($problem->toArray(), 401);
+        $response->headers->set('Content-Type', 'application/problem+json');
 
         return $response;
     }

@@ -9,6 +9,7 @@ use KnpU\CodeBattle\Application;
 use Silex\Application as SilexApplication;
 use Silex\ControllerCollection;
 use Silex\ControllerProviderInterface;
+use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
@@ -19,7 +20,8 @@ use KnpU\CodeBattle\Security\Token\ApiTokenRepository;
 use Symfony\Component\HttpFoundation\Response;
 use JMS\Serializer\SerializationContext;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
-
+use KnpU\CodeBattle\Api\ApiProblem;
+use KnpU\CodeBattle\Api\ApiProblemException;
 /**
  * Base controller class to hide Silex-related implementation details
  */
@@ -261,5 +263,23 @@ abstract class BaseController implements ControllerProviderInterface
         if ($this->getLoggedInUser()->id != $programmer->userId) {
             throw new AccessDeniedException();
         }
+    }
+
+    protected function decodeRequestBodyIntoParameters(Request $request)
+    {
+        // allow for a possibly empty body
+        if (!$request->getContent()) {
+            $data = array();
+        } else {
+            $data = json_decode($request->getContent(), true);
+            if ($data === null) {
+                $problem = new ApiProblem(
+                    400,
+                    ApiProblem::TYPE_INVALID_REQUEST_BODY_FORMAT
+                );
+                throw new ApiProblemException($problem);
+            }
+        }
+        return new ParameterBag($data);
     }
 }

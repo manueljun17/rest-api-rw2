@@ -119,36 +119,24 @@ class ProgrammerController extends BaseController
 
 
 	private function handleRequest(Request $request, Programmer $programmer)
-	{
-	    $data = json_decode($request->getContent(), true);
-	    $isNew = !$programmer->id;
-
-	    if ($data === null) {
-	        $problem = new ApiProblem(
-	            400,
-	            ApiProblem::TYPE_INVALID_REQUEST_BODY_FORMAT
-	        );
-
-	        throw new ApiProblemException($problem);
-	    }
-
-	    // determine which properties should be changeable on this request
-	    $apiProperties = array('avatarNumber', 'tagLine');
-	    if ($isNew) {
-	        $apiProperties[] = 'nickname';
-	    }
-	    // update the properties
-	    foreach ($apiProperties as $property) {
-	        // if a property is missing on PATCH, that's ok - just skip it
-	        if (!isset($data[$property]) && $request->isMethod('PATCH')) {
-	            continue;
-	        }
-	        $val = isset($data[$property]) ? $data[$property] : null;
-	        $programmer->$property = $val;
-	    }
-
-	    $programmer->userId = $this->getLoggedInUser()->id;
-	}
+    {
+        $data = $this->decodeRequestBodyIntoParameters($request);
+        $isNew = !$programmer->id;
+        // determine which properties should be changeable on this request
+        $apiProperties = array('avatarNumber', 'tagLine');
+        if ($isNew) {
+            $apiProperties[] = 'nickname';
+        }
+        // update the properties
+        foreach ($apiProperties as $property) {
+            // if a property is missing on PATCH, that's ok - just skip it
+            if (!$data->has($property) && $request->isMethod('PATCH')) {
+                continue;
+            }
+            $programmer->$property = $data->get($property);
+        }
+        $programmer->userId = $this->getLoggedInUser()->id;
+    }
 
 	private function throwApiProblemValidationException(array $errors)
 	{

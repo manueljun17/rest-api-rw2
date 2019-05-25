@@ -38,7 +38,6 @@ use JMS\Serializer\SerializerBuilder;
 use JMS\Serializer\Naming\IdenticalPropertyNamingStrategy;
 use KnpU\CodeBattle\Api\ApiProblemResponseFactory;
 
-
 class Application extends SilexApplication
 {
     public function __construct(array $values = array())
@@ -242,6 +241,7 @@ class Application extends SilexApplication
                     'stateless' => true,
                     'anonymous' => true,
                     'api_token' => true,
+                    'http' => true,
                 ),
                 'main' => array(
                     'pattern' => '^/',
@@ -255,6 +255,18 @@ class Application extends SilexApplication
             )
         ));
 
+
+        // 
+          // register this service, so we can share it
+        $app['security.entry_point'] = $app->share(function() use ($app) {
+            return new ApiEntryPoint($app['translator'], $app['api.response_factory']);
+        });
+        // setup the HttpBasic "api" firewall to use this entry point
+        $this['security.entry_point.api.http'] = $app->share(function() use ($app) {
+            return $app['security.entry_point'];
+        });
+        // 
+
         // require login for application management
         $this['security.access_rules'] = array(
             // placeholder access control for now
@@ -264,7 +276,7 @@ class Application extends SilexApplication
             array('^/api', 'IS_AUTHENTICATED_ANONYMOUSLY'),
             array('^/', 'IS_AUTHENTICATED_FULLY'),
         );
-
+        
         // setup our custom API token authentication
         $app['security.authentication_listener.factory.api_token'] = $app->protect(function ($name, $options) use ($app) {
 
@@ -279,9 +291,10 @@ class Application extends SilexApplication
                 return new ApiTokenProvider($app['repository.user'], $app['repository.api_token']);
             });
 
+            // make this use the security.entry_point service
             // the class that decides what should happen if no authentication credentials are passed
             $this['security.entry_point.'.$name.'.api_token'] = $app->share(function() use ($app) {
-                return new ApiEntryPoint($app['translator'], $app['api.response_factory']);
+                return $app['security.entry_point'];
             });
 
             return array(

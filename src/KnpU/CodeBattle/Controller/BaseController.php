@@ -282,4 +282,14 @@ abstract class BaseController implements ControllerProviderInterface
         }
         return new ParameterBag($data);
     }
+
+    protected function throwApiProblemValidationException(array $errors)
+    {
+        $apiProblem = new ApiProblem(
+            400,
+            ApiProblem::TYPE_VALIDATION_ERROR
+        );
+        $apiProblem->set('errors', $errors);
+        throw new ApiProblemException($apiProblem);
+    }
 }

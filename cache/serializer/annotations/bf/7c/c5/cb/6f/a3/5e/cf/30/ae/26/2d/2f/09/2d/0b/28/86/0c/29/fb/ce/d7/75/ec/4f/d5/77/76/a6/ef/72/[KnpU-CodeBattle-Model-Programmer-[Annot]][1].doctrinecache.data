@@ -1,2 +1,2 @@
 0
-a:1:{i:0;O:41:"JMS\Serializer\Annotation\ExclusionPolicy":1:{s:6:"policy";s:3:"ALL";}}
+a:2:{i:0;O:41:"JMS\Serializer\Annotation\ExclusionPolicy":1:{s:6:"policy";s:3:"ALL";}i:1;O:41:"Hateoas\Configuration\Annotation\Relation":5:{s:4:"name";s:4:"self";s:4:"href";s:43:"expr('/api/programmers/' ~ object.nickname)";s:8:"embedded";N;s:10:"attributes";a:0:{}s:9:"exclusion";N;}}

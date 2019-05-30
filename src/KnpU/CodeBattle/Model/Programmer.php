@@ -6,9 +6,16 @@ use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 use JMS\Serializer\Annotation as Serializer;
 use Hateoas\Configuration\Annotation as Hateoas;
+
 /**
  * @Serializer\ExclusionPolicy("all")
- * @Hateoas\Relation("self", href = "expr('/api/programmers/' ~ object.nickname)")
+ * @Hateoas\Relation(
+ *      "self",
+ *      href = @Hateoas\Route(
+ *          "api_programmers_show",
+ *          parameters = { "nickname" = "expr(object.nickname)" }
+ *      )
+ * )
  */
 class Programmer
 {

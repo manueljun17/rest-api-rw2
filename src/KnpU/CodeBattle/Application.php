@@ -38,6 +38,7 @@ use JMS\Serializer\SerializerBuilder;
 use JMS\Serializer\Naming\IdenticalPropertyNamingStrategy;
 use KnpU\CodeBattle\Api\ApiProblemResponseFactory;
 use Hateoas\HateoasBuilder;
+use Hateoas\UrlGenerator\SymfonyUrlGenerator;
 
 class Application extends SilexApplication
 {
@@ -222,7 +223,9 @@ class Application extends SilexApplication
                 ->setDebug($app['debug'])
                 ->setPropertyNamingStrategy(new IdenticalPropertyNamingStrategy());
             // create the Hateoas serializer
-            return HateoasBuilder::create($jmsBuilder)->build();
+            return HateoasBuilder::create($jmsBuilder)
+                ->setUrlGenerator(null, new SymfonyUrlGenerator($app['url_generator']))
+                ->build();
         });
 
         $this['api.response_factory'] = $this->share(function() {

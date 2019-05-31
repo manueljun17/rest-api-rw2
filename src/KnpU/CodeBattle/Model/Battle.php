@@ -2,8 +2,16 @@
 
 namespace KnpU\CodeBattle\Model;
 use JMS\Serializer\Annotation as Serializer;
+use Hateoas\Configuration\Annotation as Hateoas;
 
 /**
+ * @Hateoas\Relation(
+ *      "programmer",
+ *      href = @Hateoas\Route(
+ *          "api_programmers_show",
+ *          parameters = { "nickname" = "expr(object.programmer.nickname)" }
+ *      )
+ * )
  * @Serializer\ExclusionPolicy("all")
  */
 class Battle

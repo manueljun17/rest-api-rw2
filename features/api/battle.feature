@@ -2,10 +2,12 @@ Feature:
   In order to prove my programmers' worth against projects
   As an API client
   I need to be able to create and view battles
+
   Background:
     Given the user "weaverryan" exists
     And "weaverryan" has an authentication token "ABCD123"
     And I set the "Authorization" header to be "token ABCD123"
+    
   Scenario: Create a battle
     Given there is a project called "my_project"
     And there is a programmer called "Fred"
@@ -31,4 +33,5 @@ Feature:
     And the "didProgrammerWin" property should exist
     And the link "programmer" should exist and its value should be "/api/programmers/Fred"
     And the "Content-Type" header should be "application/hal+json"
-    
+    And the embedded "programmer" should have a "nickname" property equal to "Fred"
+    And print last response

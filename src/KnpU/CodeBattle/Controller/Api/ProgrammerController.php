@@ -3,18 +3,20 @@
 namespace KnpU\CodeBattle\Controller\Api;
 
 use Hateoas\Representation\CollectionRepresentation;
+use Hateoas\Representation\PaginatedRepresentation;
 use KnpU\CodeBattle\Api\ApiProblem;
 use KnpU\CodeBattle\Api\ApiProblemException;
 use KnpU\CodeBattle\Controller\BaseController;
+use KnpU\CodeBattle\Model\Homepage;
 use Silex\Application;
 use Silex\ControllerCollection;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use KnpU\CodeBattle\Model\Programmer;
-use KnpU\CodeBattle\Model\Homepage;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
+
 
 
 class ProgrammerController extends BaseController
@@ -104,15 +106,30 @@ class ProgrammerController extends BaseController
         return $response;
     }
 
-	public function listAction()
+	public function listAction(Request $request)
 	{
 	    $programmers = $this->getProgrammerRepository()->findAll();
-		$collection = new CollectionRepresentation(
-            $programmers,
-            "programmers",
-            "programmers"
+
+	    $limit = $request->query->get('limit', 5);
+        $page = $request->query->get('page', 1);
+        // my manual, silly pagination logic. Use a real library
+        $offset = ($page - 1) * $limit;
+        $numberOfPages = (int) ceil(count($programmers) / $limit);
+        $collection = new CollectionRepresentation(
+            // my manual, silly pagination logic. Use a real library
+            array_slice($programmers, $offset, $limit),
+            'programmers',
+            'programmers'
         );
-        $response = $this->createApiResponse($collection, 200, 'json');
+        $paginated = new PaginatedRepresentation(
+            $collection,
+            'api_programmers_list',
+            array(),
+            $page,
+            $limit,
+            $numberOfPages
+        );
+        $response = $this->createApiResponse($paginated, 200, 'json');
 		return $response;
 	}
 

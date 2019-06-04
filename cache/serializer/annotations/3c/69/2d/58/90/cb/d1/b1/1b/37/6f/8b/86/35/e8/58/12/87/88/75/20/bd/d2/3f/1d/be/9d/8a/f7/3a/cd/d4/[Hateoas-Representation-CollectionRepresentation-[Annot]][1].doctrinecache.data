@@ -1,2 +1,0 @@
-0
-a:3:{i:0;O:41:"JMS\Serializer\Annotation\ExclusionPolicy":1:{s:6:"policy";s:3:"ALL";}i:1;O:33:"JMS\Serializer\Annotation\XmlRoot":3:{s:4:"name";s:10:"collection";s:9:"namespace";N;s:6:"prefix";N;}i:2;O:41:"Hateoas\Configuration\Annotation\Relation":5:{s:4:"name";s:5:"items";s:4:"href";N;s:8:"embedded";O:41:"Hateoas\Configuration\Annotation\Embedded":4:{s:7:"content";s:27:"expr(object.getResources())";s:4:"type";N;s:14:"xmlElementName";N;s:9:"exclusion";N;}s:10:"attributes";a:0:{}s:9:"exclusion";N;}}

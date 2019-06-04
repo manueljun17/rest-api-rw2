@@ -6,6 +6,13 @@ use Hateoas\Configuration\Annotation as Hateoas;
 
 /**
  * @Hateoas\Relation(
+ *      "self",
+ *      href = @Hateoas\Route(
+ *          "api_battle_show",
+ *          parameters = { "id" = "expr(object.id)" }
+ *      )
+ * )
+ * @Hateoas\Relation(
  *      "programmer",
  *      href = @Hateoas\Route(
  *          "api_programmers_show",
